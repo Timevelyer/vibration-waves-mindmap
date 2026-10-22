@@ -1,0 +1,1629 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>振动与波动 · 知识结构图</title>
+<style>
+  :root{
+    --bg:#091a22;
+    --bg2:#0d222c;
+    --ink:#e9f3f4;
+    --muted:#8fa9b0;
+    --line:rgba(140,205,215,.16);
+    --amber:#efc05c;
+    --paper:#f5f2e8;
+    --paper-ink:#1d2b2a;
+    --teal:#4fd1c5;
+    --indigo:#8fa6ff;
+    --cyan:#5ec8f2;
+    --amber2:#f0c05a;
+    --violet:#c6a0ff;
+    --rose:#ff8b98;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;overflow:hidden;color:var(--ink);
+    font-family:"Microsoft YaHei","PingFang SC","Noto Sans SC",system-ui,sans-serif;
+    background:
+      radial-gradient(1200px 700px at 18% 0%,rgba(40,110,120,.20),transparent 60%),
+      radial-gradient(1000px 800px at 100% 100%,rgba(30,80,110,.18),transparent 55%),
+      var(--bg);
+  }
+  /* ---------- top bar ---------- */
+  header{
+    position:relative;z-index:20;height:62px;display:flex;align-items:center;gap:12px;
+    padding:0 18px;border-bottom:1px solid var(--line);
+    background:rgba(9,26,34,.82);backdrop-filter:blur(10px);
+  }
+  .brand{display:flex;align-items:baseline;gap:9px;white-space:nowrap;min-width:0;flex:0 0 auto}
+  .brand .phi{
+    font-family:"Cambria Math","Times New Roman",serif;font-size:24px;color:var(--teal);
+    line-height:1;transform:translateY(1px);
+  }
+  .brand h1{
+    margin:0;font-family:"Source Han Serif SC","Songti SC","STSong",serif;
+    font-size:18px;font-weight:600;letter-spacing:.04em;white-space:nowrap;
+  }
+  .brand .sub{font-size:11px;color:var(--muted);letter-spacing:.06em;white-space:nowrap}
+  nav.tabs{display:flex;gap:2px;padding:3px;border:1px solid var(--line);border-radius:8px;background:rgba(255,255,255,.02);flex:0 0 auto}
+  nav.tabs button{
+    appearance:none;border:0;background:transparent;color:var(--muted);cursor:pointer;
+    font:inherit;font-size:12.5px;padding:6px 13px;border-radius:6px;letter-spacing:.05em;
+    transition:color .18s,background .18s;white-space:nowrap;
+  }
+  nav.tabs button:hover{color:var(--ink)}
+  nav.tabs button.on{background:rgba(79,209,197,.14);color:#dffbf7;box-shadow:inset 0 0 0 1px rgba(79,209,197,.22)}
+  .spacer{flex:1}
+  .zoomers{display:flex;align-items:center;gap:5px;flex:0 0 auto}
+  .zoomers button{
+    appearance:none;width:28px;height:28px;border:1px solid var(--line);border-radius:6px;
+    background:rgba(255,255,255,.03);color:var(--muted);cursor:pointer;font:14px/1 system-ui;
+    transition:.15s;
+  }
+  .zoomers button:hover{color:var(--ink);border-color:rgba(140,205,215,.4)}
+  .zoomers button.wide{width:auto;padding:0 10px;font-size:11.5px;letter-spacing:.04em;white-space:nowrap}
+  .zoomers .sep{width:1px;height:18px;background:var(--line);margin:0 2px}
+  .pdf-link{
+    margin-left:4px;padding:6px 12px;border-radius:6px;text-decoration:none;
+    font-size:11.5px;letter-spacing:.05em;color:#0b1f28;background:var(--teal);
+    border:1px solid rgba(79,209,197,.55);transition:.15s;white-space:nowrap;flex:0 0 auto;
+  }
+  .pdf-link:hover{background:#7ee6dc;color:#081820}
+  body.poster .pdf-link{display:none}
+
+  /* ---------- map ---------- */
+  #map-view{position:relative;height:calc(100vh - 62px);display:flex;flex-direction:column}
+  #stage{
+    position:relative;flex:1;overflow:hidden;cursor:grab;
+    background-image:
+      linear-gradient(rgba(125,200,210,.055) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(125,200,210,.055) 1px,transparent 1px),
+      linear-gradient(rgba(125,200,210,.03) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(125,200,210,.03) 1px,transparent 1px);
+    background-size:160px 160px,160px 160px,32px 32px,32px 32px;
+    background-position:-1px -1px,-1px -1px,-1px -1px,-1px -1px;
+  }
+  #stage.dragging{cursor:grabbing}
+  #stage{touch-action:none}
+  #world{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform}
+  #links{position:absolute;left:0;top:0;width:1px;height:1px;overflow:visible;pointer-events:none}
+
+  /* search */
+  .searchwrap{position:relative;flex:0 1 auto}
+  #search{
+    width:180px;height:30px;border-radius:6px;border:1px solid var(--line);
+    background:rgba(255,255,255,.03);color:var(--ink);padding:0 11px;
+    font:inherit;font-size:12px;outline:none;transition:border-color .15s,width .2s;
+  }
+  #search::placeholder{color:#6f8b92}
+  #search:focus{border-color:rgba(79,209,197,.55);width:210px}
+  .results{
+    position:absolute;top:36px;left:0;width:310px;max-height:330px;overflow:auto;
+    background:#0b2029;border:1px solid rgba(140,205,215,.25);border-radius:8px;
+    box-shadow:0 18px 40px rgba(0,0,0,.5);display:none;z-index:40;
+  }
+  .results.show{display:block}
+  .results button{
+    display:block;width:100%;text-align:left;padding:9px 12px;border:0;border-bottom:1px solid rgba(140,205,215,.1);
+    background:transparent;color:#dcebed;font:inherit;font-size:12.5px;cursor:pointer;
+  }
+  .results button:hover,.results button.act{background:rgba(79,209,197,.1)}
+  .results button small{display:block;font-size:10px;color:#7e9aa0;margin-top:2px;letter-spacing:.02em}
+  .results .empty{padding:12px;color:#7e9aa0;font-size:12px}
+
+  /* focus / back */
+  .back-all{
+    position:absolute;left:16px;top:14px;z-index:12;display:flex;align-items:center;gap:7px;
+    padding:7px 12px;border-radius:20px;border:1px solid rgba(140,205,215,.3);
+    background:rgba(10,30,38,.9);color:#dff7f3;font:inherit;font-size:11.5px;cursor:pointer;
+    backdrop-filter:blur(8px);box-shadow:0 6px 18px rgba(0,0,0,.25);
+  }
+  .back-all:hover{border-color:rgba(79,209,197,.6)}
+  .back-all[hidden]{display:none}
+  .focus-name{
+    position:absolute;left:16px;top:54px;z-index:12;font-size:10.5px;color:#7fa7aa;
+    letter-spacing:.12em;pointer-events:none;
+  }
+
+  /* detail panel */
+  .scrim{display:none}
+  .detail{
+    position:absolute;top:0;right:0;bottom:0;width:360px;z-index:20;
+    background:rgba(9,27,35,.97);border-left:1px solid rgba(140,205,215,.22);
+    transform:translateX(103%);transition:transform .28s cubic-bezier(.2,.7,.2,1);
+    box-shadow:-20px 0 50px rgba(0,0,0,.35);backdrop-filter:blur(16px);
+    padding:24px 24px 32px;overflow-y:auto;
+  }
+  .detail.open{transform:none}
+  .detail-close{
+    position:absolute;right:14px;top:12px;width:30px;height:30px;border-radius:50%;
+    border:1px solid transparent;background:transparent;color:#7fa7aa;font-size:20px;line-height:1;
+    cursor:pointer;
+  }
+  .detail-close:hover{color:#fff;border-color:rgba(140,205,215,.3)}
+  .detail-crumb{font-size:10.5px;letter-spacing:.06em;color:#7e9aa0;line-height:1.6;padding-right:26px}
+  .detail-title{
+    margin:10px 0 6px;font-family:"Source Han Serif SC","Songti SC","STSong",serif;
+    font-size:22px;line-height:1.4;font-weight:700;color:#f2fdfc;letter-spacing:.02em;
+  }
+  .detail-note{font-size:12px;color:#efc05c;line-height:1.7;margin:0 0 14px}
+  .detail-actions{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 6px}
+  .detail-actions button{
+    padding:6px 11px;border-radius:5px;border:1px solid rgba(79,209,197,.3);
+    background:rgba(79,209,197,.08);color:#bff5ee;font:inherit;font-size:11.5px;cursor:pointer;
+  }
+  .detail-actions button:hover{background:rgba(79,209,197,.16)}
+  .detail-sec{font-size:10.5px;letter-spacing:.16em;color:#6f8b92;margin:18px 0 8px}
+  .drow{
+    padding:9px 11px;margin:6px 0;border-left:2px solid var(--c,#4fd1c5);
+    background:rgba(255,255,255,.025);border-radius:0 4px 4px 0;cursor:pointer;
+    font-size:13.5px;line-height:1.5;color:#dcebed;transition:background .15s;
+  }
+  .drow:hover{background:rgba(255,255,255,.06)}
+  .drow.cur{background:rgba(79,209,197,.1);box-shadow:inset 0 0 0 1px rgba(79,209,197,.25)}
+  .drow small{display:block;font-size:10.5px;color:#89a5aa;margin-top:2px;line-height:1.5}
+  .drow.leaf{cursor:default}
+  .drow.leaf:hover{background:rgba(255,255,255,.025)}
+
+  /* branch rail */
+  .rail{
+    position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:12;
+    display:flex;gap:5px;padding:5px;border-radius:22px;max-width:calc(100% - 32px);
+    background:rgba(10,30,38,.88);border:1px solid rgba(140,205,215,.2);
+    backdrop-filter:blur(10px);box-shadow:0 8px 24px rgba(0,0,0,.28);
+    overflow-x:auto;scrollbar-width:none;
+  }
+  .rail::-webkit-scrollbar{display:none}
+  .rail button{
+    flex:0 0 auto;display:flex;align-items:center;gap:6px;padding:5px 10px;border-radius:16px;
+    border:1px solid transparent;background:transparent;color:#a9c3c6;font:inherit;
+    font-size:11px;cursor:pointer;white-space:nowrap;transition:.15s;
+  }
+  .rail button i{width:6px;height:6px;border-radius:50%;background:var(--c,#4fd1c5);flex:0 0 auto}
+  .rail button:hover{background:rgba(255,255,255,.06);color:#fff}
+  .rail button.on{background:rgba(79,209,197,.13);border-color:rgba(79,209,197,.32);color:#e6fffb}
+
+  @media (max-width:1100px){
+    .brand .sub{display:none}
+  }
+  @media (max-width:980px){
+    #search{width:132px}
+    #search:focus{width:160px}
+    .zoomers button.wide{padding:0 8px}
+  }
+  @media (max-width:860px){
+    header{gap:8px;padding:0 12px}
+    .brand h1{font-size:16px}
+    .brand .phi{font-size:20px}
+    nav.tabs button{padding:6px 9px;font-size:11.5px}
+    .zoomers button{width:26px;height:26px}
+    .pdf-link{padding:6px 9px}
+  }
+
+  @media (max-width:780px){
+    .detail{
+      top:auto;left:0;right:0;bottom:0;width:auto;max-height:60vh;
+      transform:translateY(103%);border-left:0;border-top:1px solid rgba(140,205,215,.25);
+      border-radius:16px 16px 0 0;padding:20px 18px 28px;
+    }
+    .detail.open{transform:none}
+    .scrim.show{display:block;position:absolute;inset:0;background:rgba(0,0,0,.42);z-index:19}
+    .back-all{left:12px;top:10px}
+    .focus-name{left:12px;top:50px}
+    #search{width:120px}
+    #search:focus{width:140px}
+    .rail{bottom:10px;max-width:calc(100% - 20px)}
+  }
+  @media (max-width:620px){
+    .searchwrap{display:none}
+    header{height:54px;gap:6px;padding:0 10px}
+    .brand{gap:6px}
+    .brand h1{font-size:15px;letter-spacing:.02em}
+    .brand .phi{font-size:18px}
+    nav.tabs{padding:2px;border-radius:7px;gap:0}
+    nav.tabs button{font-size:10.5px;padding:5px 7px;letter-spacing:.02em}
+    .zoomers{display:none}
+    .pdf-link{padding:5px 8px;font-size:10px;margin-left:0;border-radius:5px}
+    #map-view,#phase-view{height:calc(100vh - 54px)}
+    .bottombar{height:38px;padding:0 10px;gap:8px;font-size:9.5px}
+    .hint{font-size:9px;letter-spacing:.03em}
+    .rail{bottom:8px;max-width:calc(100% - 16px);gap:3px;padding:4px}
+    .rail button{padding:4px 7px;font-size:10px;gap:5px}
+    .rail button i{width:5px;height:5px}
+    .back-all{padding:6px 10px;font-size:10.5px}
+    .detail{max-height:58vh}
+  }
+
+  .node{
+    position:absolute;display:flex;flex-direction:column;justify-content:center;
+    border-radius:5px;padding:0 12px;white-space:nowrap;
+    transition:background .15s,box-shadow .15s,opacity .2s;
+    user-select:none;
+  }
+  .node .t{line-height:1.2}
+  .node .n{line-height:1.25;margin-top:3px;color:var(--muted);font-size:10.5px;letter-spacing:.01em}
+  .node.d0{
+    align-items:flex-start;padding:0 22px;border-radius:10px;
+    background:linear-gradient(135deg,rgba(79,209,197,.13),rgba(79,209,197,.03));
+    box-shadow:inset 0 0 0 1px rgba(79,209,197,.35),0 0 60px rgba(79,209,197,.08);
+  }
+  .node.d0 .t{
+    font-family:"Source Han Serif SC","Songti SC","STSong",serif;
+    font-size:22px;font-weight:700;letter-spacing:.12em;color:#f2fffd;
+  }
+  .node.d0 .n{font-size:10.5px;color:#82b9b7;letter-spacing:.2em;margin-top:7px}
+  .node.d1{
+    font-size:14.5px;font-weight:600;color:#f4fdfd;
+    background:rgba(255,255,255,.035);
+    border-left:3px solid var(--c);
+    box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--c) 24%,transparent);
+  }
+  .node.d2{
+    font-size:13px;color:#dcebed;
+    border-left:2px solid color-mix(in srgb,var(--c) 55%,transparent);
+    background:linear-gradient(90deg,color-mix(in srgb,var(--c) 7%,transparent),transparent 70%);
+  }
+  .node.d3{font-size:12.2px;color:#a8c2c7;padding-left:16px}
+  .node.d3::before{
+    content:"";position:absolute;left:6px;top:50%;width:3px;height:3px;border-radius:50%;
+    background:color-mix(in srgb,var(--c) 70%,transparent);transform:translateY(-50%);
+  }
+  .node.d3 .n{font-size:10px;color:#7c979d}
+  .node.has-kids{cursor:pointer}
+  .node.has-kids:hover{background:rgba(255,255,255,.07)}
+  .node.selected{
+    background:rgba(239,192,92,.10) !important;
+    box-shadow:inset 0 0 0 1px rgba(239,192,92,.65),0 0 24px rgba(239,192,92,.10);
+  }
+  .node.d1:hover{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--c) 45%,transparent)}
+  .node .toggle{
+    position:absolute;top:50%;transform:translateY(-50%);width:18px;height:18px;
+    display:flex;align-items:center;justify-content:center;border-radius:50%;
+    font-size:12px;line-height:1;color:var(--c);
+    border:1px solid color-mix(in srgb,var(--c) 45%,transparent);
+    background:var(--bg);opacity:.55;transition:opacity .15s,background .15s;
+  }
+  .node:hover .toggle{opacity:1}
+  .node[data-dir="r"] .toggle{right:-20px}
+  .node[data-dir="l"] .toggle{left:-20px}
+
+  /* ---------- bottom bar ---------- */
+  .bottombar{
+    height:52px;display:flex;align-items:center;gap:22px;padding:0 22px;
+    border-top:1px solid var(--line);background:rgba(9,26,34,.86);backdrop-filter:blur(10px);
+    font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;
+  }
+  .logic{display:flex;align-items:center;gap:8px;min-width:0;overflow:hidden}
+  .logic b{color:#c9dadd;font-weight:500;letter-spacing:.06em;margin-right:10px}
+  .logic .item{display:flex;align-items:center;gap:6px;overflow:hidden;text-overflow:ellipsis}
+  .logic .item + .item{margin-left:18px;padding-left:18px;border-left:1px solid rgba(140,205,215,.14)}
+  .logic .num{
+    flex:0 0 auto;width:15px;height:15px;border-radius:50%;display:grid;place-items:center;
+    font-size:9px;color:var(--amber);border:1px solid rgba(239,192,92,.5);
+  }
+  .logic .arrow{color:rgba(239,192,92,.65)}
+  .hint{margin-left:auto;color:#6f8b92;letter-spacing:.06em;flex:0 0 auto}
+
+  /* ---------- phase article ---------- */
+  #phase-view{display:none;height:calc(100vh - 62px);overflow-y:auto;background:#081820}
+  body.phase #map-view{display:none}
+  body.phase #phase-view{display:block}
+  body.phase .zoomers{display:none}
+  body.poster header,body.poster .bottombar{display:none}
+  body.poster .rail,body.poster .back-all,body.poster .focus-name,body.poster .detail,body.poster .scrim{display:none}
+  body.poster #map-view{height:100vh}
+  #poster-title{display:none}
+  body.poster #poster-title{
+    position:fixed;left:38px;top:26px;z-index:5;display:flex;align-items:baseline;gap:14px;
+    pointer-events:none;
+  }
+  body.poster #poster-title b{
+    font-family:"Source Han Serif SC","Songti SC","STSong",serif;
+    font-size:24px;font-weight:700;letter-spacing:.1em;color:#eaf7f6;
+  }
+  body.poster #poster-title span{font-size:11px;letter-spacing:.24em;color:#7fa7aa}
+  body.poster #poster-title i{
+    font-family:"Cambria Math","Times New Roman",serif;font-style:normal;
+    color:#4fd1c5;font-size:22px;margin-right:4px;
+  }
+  .paper{
+    max-width:940px;margin:30px auto 70px;padding:58px 66px 66px;
+    background:var(--paper);color:var(--paper-ink);
+    box-shadow:0 30px 80px rgba(0,0,0,.45),0 2px 0 rgba(255,255,255,.4) inset;
+    border-radius:3px;
+    font-size:15.5px;line-height:1.95;
+  }
+  .paper .kicker{
+    font-size:11px;letter-spacing:.28em;color:#6c7f76;margin-bottom:14px;
+    display:flex;align-items:center;gap:12px;
+  }
+  .paper .kicker::after{content:"";flex:1;height:1px;background:#c9d4c9}
+  .paper h1{
+    margin:0 0 10px;font-family:"Source Han Serif SC","Songti SC","STSong",serif;
+    font-size:33px;line-height:1.35;font-weight:700;letter-spacing:.04em;color:#14231f;
+  }
+  .paper .lede{font-size:14px;color:#5d7068;margin:0 0 30px;letter-spacing:.02em}
+  .paper h2{
+    margin:44px 0 14px;font-family:"Source Han Serif SC","Songti SC","STSong",serif;
+    font-size:22px;font-weight:700;letter-spacing:.03em;color:#14231f;
+    padding-bottom:8px;border-bottom:1px solid #cfd9cf;
+  }
+  .paper h2 .no{color:#0f6b5c;font-size:14px;letter-spacing:.12em;margin-right:10px;font-family:"Microsoft YaHei",sans-serif;vertical-align:2px}
+  .paper h3{
+    margin:26px 0 8px;font-size:16px;font-weight:700;color:#1b3a33;letter-spacing:.02em;
+  }
+  .paper h3 .tag{font-size:11px;color:#7b8d84;font-weight:400;letter-spacing:.1em;margin-left:8px}
+  .paper p{margin:9px 0}
+  .paper .key{
+    margin:18px 0;padding:14px 18px;border-left:3px solid #0f6b5c;background:#e9efe7;
+    font-size:14.5px;line-height:1.9;color:#213f37;
+  }
+  .paper .key b{color:#0b574b}
+  .paper .formula{
+    margin:13px 0;padding:10px 14px;text-align:center;
+    font-family:"Cambria Math","Times New Roman",serif;font-size:17px;color:#10211d;
+    background:#eef1e9;border-radius:3px;letter-spacing:.01em;
+  }
+  .paper .formula.small{font-size:15px;padding:8px 12px}
+  .paper .formula i,.paper i{font-family:"Cambria Math","Times New Roman",serif;font-style:italic}
+  .paper sup,.paper sub{font-size:.66em;line-height:0}
+  .paper table{width:100%;border-collapse:collapse;margin:16px 0 20px;font-size:13.5px;line-height:1.65}
+  .paper th,.paper td{border:1px solid #c8d3c8;padding:9px 11px;vertical-align:top;text-align:left}
+  .paper th{background:#e6ebe1;font-weight:700;color:#213d35;letter-spacing:.02em}
+  .paper tr:nth-child(even) td{background:#f0f2e9}
+  .paper .scroll-x{overflow-x:auto;margin:16px 0}
+  .paper .scroll-x table{margin:0;min-width:620px}
+  .paper ul,.paper ol{margin:8px 0 8px 22px;padding:0}
+  .paper li{margin:5px 0}
+  .paper .fig{margin:26px 0 22px;text-align:center}
+  .paper .fig svg{max-width:100%;height:auto}
+  .paper .fig figcaption{font-size:11.5px;color:#6c7f76;margin-top:6px;letter-spacing:.04em}
+  .paper .answer{
+    margin:26px 0 0;padding:22px 24px;border:1px solid #0f6b5c;background:#edf2ea;
+  }
+  .paper .answer h3{margin:0 0 10px;color:#0b574b;font-size:16px}
+  .paper .answer p{font-size:14px;line-height:1.95}
+  .paper .answer .formula{background:#e3eae0;font-size:15px;margin:8px 0}
+  .paper .end{
+    margin-top:40px;padding-top:14px;border-top:1px solid #c9d4c9;
+    font-size:11px;color:#7d8e85;letter-spacing:.16em;text-align:right;
+  }
+  .paper .twocol{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media (max-width:780px){
+    .paper{padding:34px 22px;margin:14px 10px 40px;font-size:14.5px}
+    .paper h1{font-size:26px}
+    .paper .twocol{grid-template-columns:1fr}
+    .brand .sub{display:none}
+    .logic{display:none}
+    header{gap:12px;padding:0 12px}
+  }
+  @media print{
+    body{background:#fff;overflow:visible}
+    header,.bottombar{display:none}
+    #phase-view{height:auto;overflow:visible;background:#fff}
+    .paper{box-shadow:none;margin:0;max-width:none;padding:0}
+  }
+</style>
+</head>
+<body>
+<div id="poster-title"><b><i>Φ</i>振动与波动</b><span>第 13–14 章 · 知识结构</span></div>
+
+<header>
+  <div class="brand">
+    <span class="phi">Φ</span>
+    <h1>振动与波动</h1>
+    <span class="sub">第 13–14 章 · 知识结构</span>
+  </div>
+  <nav class="tabs">
+    <button id="tab-map" class="on">思维导图</button>
+    <button id="tab-phase">相位专题</button>
+  </nav>
+  <div class="searchwrap">
+    <input id="search" type="search" placeholder="搜索知识点…" autocomplete="off" spellcheck="false">
+    <div id="results" class="results"></div>
+  </div>
+  <div class="spacer"></div>
+  <div class="zoomers">
+    <button id="z-out" title="缩小">−</button>
+    <button id="z-in" title="放大">＋</button>
+    <button id="z-fit" class="wide" title="适应窗口">适应</button>
+    <span class="sep"></span>
+    <button id="z-logic" class="wide" title="显示三条逻辑关联">关联</button>
+    <button id="z-all" class="wide" title="展开/收起全部层级">展开全部</button>
+  </div>
+  <a class="pdf-link" href="mindmap.pdf" download>下载 PDF</a>
+</header>
+
+<main>
+  <section id="map-view">
+    <div id="stage">
+      <div id="world">
+        <svg id="links"></svg>
+      </div>
+      <button id="back-all" class="back-all" hidden>← 返回全图</button>
+      <div id="focus-name" class="focus-name" hidden></div>
+      <div id="rail" class="rail" aria-label="分支导航"></div>
+    </div>
+
+    <aside id="detail" class="detail" aria-hidden="true">
+      <button id="detail-close" class="detail-close" aria-label="关闭">×</button>
+      <div id="detail-crumb" class="detail-crumb"></div>
+      <h2 id="detail-title" class="detail-title"></h2>
+      <p id="detail-note" class="detail-note"></p>
+      <div class="detail-actions">
+        <button id="btn-focus">聚焦这一支</button>
+        <button id="btn-locate">在图中定位</button>
+      </div>
+      <div id="detail-body" class="detail-body"></div>
+    </aside>
+    <div id="scrim" class="scrim"></div>
+
+    <div class="bottombar">
+      <div class="logic">
+        <b>逻辑主线</b>
+        <span class="item"><span class="num">1</span>相位：振动的时间刻度<span class="arrow">→</span>波的空间刻度</span>
+        <span class="item"><span class="num">2</span>同频叠加：振动合成<span class="arrow">→</span>波的干涉</span>
+        <span class="item"><span class="num">3</span>能量：振子守恒<span class="arrow">→</span>波定向传播</span>
+      </div>
+      <div class="hint">滚轮 / 双指缩放 · 拖动平移 · 点节点看详情</div>
+    </div>
+  </section>
+
+  <section id="phase-view">
+    <article class="paper">
+      <div class="kicker">大学物理 · 第 13–14 章 · 思考题</div>
+      <h1>相位：一条贯穿振动与波动的线索</h1>
+      <p class="lede">简谐振动的多种描述如何对应？振动方程与波动方程中的“相位”究竟是不是一回事？</p>
+
+      <div class="key">
+        <b>先给结论。</b>振动方程中的相位 <i>Φ</i>(<i>t</i>) = <i>ωt</i> + <i>φ</i> 只有一个自变量 <i>t</i>，是“一个质点走到哪一步”的时间刻度；波动方程中的相位 <i>Φ</i>(<i>x</i>,<i>t</i>) = <i>ωt</i> − <i>kx</i> + <i>φ</i> 有两个自变量，是“波线上每一点、每一时刻走到哪一步”的时空刻度。波动的本质，就是振动相位以速度 <i>u</i> 在介质中向前传播。
+      </div>
+
+      <h2><span class="no">问题一</span>简谐振动的几种描述形式</h2>
+      <p>课程中描述同一个简谐振动，主要用了三种形式：<b>解析式（振动方程）</b>、<b>曲线（<i>x</i>–<i>t</i> 图）</b>、<b>旋转矢量（相量图，图解法）</b>。若再往数学上走一步，还有<b>复数（相量）表示</b>。它们不是四种不同的振动，而是同一振动的四种“语言”。</p>
+
+      <h3>1. 解析式：<span class="tag">代数语言</span></h3>
+      <p>取平衡位置为原点、沿振动方向为 <i>x</i> 轴，简谐振动的标准形式为</p>
+      <div class="formula"><i>x</i> = <i>A</i> cos(<i>ωt</i> + <i>φ</i>)</div>
+      <p>其中 <i>A</i> 为振幅，<i>ω</i> 为圆频率，<i>φ</i> 为初相，(<i>ωt</i> + <i>φ</i>) 为相位。速度与加速度为</p>
+      <div class="formula"><i>v</i> = −<i>Aω</i> sin(<i>ωt</i> + <i>φ</i>) = <i>Aω</i> cos(<i>ωt</i> + <i>φ</i> + π/2)</div>
+      <div class="formula"><i>a</i> = −<i>Aω</i><sup>2</sup> cos(<i>ωt</i> + <i>φ</i>) = <i>Aω</i><sup>2</sup> cos(<i>ωt</i> + <i>φ</i> + π)</div>
+      <p>可见 <i>v</i> 的相位比 <i>x</i> 超前 π/2，<i>a</i> 与 <i>x</i> 反相（相差 π）。三要素由初始条件定出：</p>
+      <div class="formula"><i>A</i> = √(<i>x</i><sub>0</sub><sup>2</sup> + <i>v</i><sub>0</sub><sup>2</sup>/<i>ω</i><sup>2</sup>)，&nbsp;&nbsp; tan<i>φ</i> = −<i>v</i><sub>0</sub>/(<i>ωx</i><sub>0</sub>)</div>
+      <p>用反三角函数求 <i>φ</i> 时，必须结合 <i>x</i><sub>0</sub>、<i>v</i><sub>0</sub> 的符号确定象限，不能只取主值。</p>
+
+      <h3>2. 曲线法：<span class="tag">图像语言</span></h3>
+      <p>以 <i>t</i> 为横轴、<i>x</i> 为纵轴画出的 <i>x</i>–<i>t</i> 曲线，是一条余弦曲线。曲线直接给出“全貌”：峰值就是 <i>A</i>，相邻两个同相点（如相邻波峰）的时间间隔就是周期 <i>T</i>，而 <i>t</i> = 0 处的位移 <i>x</i><sub>0</sub> 与曲线斜率（即 <i>v</i><sub>0</sub>）共同确定初相 <i>φ</i>。</p>
+
+      <h3>3. 旋转矢量法：<span class="tag">几何语言</span></h3>
+      <p>画一个长度为 <i>A</i> 的矢量 <b>A</b>，让它在 <i>x</i> 轴上以角速度 <i>ω</i> 逆时针匀速旋转，则矢量端点任何时刻在 <i>x</i> 轴上的投影就是 <i>x</i> = <i>A</i> cos(<i>ωt</i> + <i>φ</i>)。矢量与 <i>x</i> 轴的夹角就是相位，<i>t</i> = 0 时的夹角就是初相。</p>
+
+      <figure class="fig">
+        <svg viewBox="0 0 420 270" width="420" role="img" aria-label="旋转矢量图">
+          <defs>
+            <marker id="arr1" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+              <path d="M0,0 L7,3 L0,6 z" fill="#26433c"/>
+            </marker>
+          </defs>
+          <line x1="40" y1="170" x2="390" y2="170" stroke="#9fb2a8" stroke-width="1"/>
+          <line x1="390" y1="170" x2="382" y2="166" stroke="#9fb2a8" stroke-width="1"/>
+          <line x1="382" y1="170" x2="390" y2="174" stroke="#9fb2a8" stroke-width="1"/>
+          <line x1="170" y1="240" x2="170" y2="30" stroke="#9fb2a8" stroke-width="1"/>
+          <line x1="170" y1="30" x2="166" y2="38" stroke="#9fb2a8" stroke-width="1"/>
+          <line x1="170" y1="30" x2="174" y2="38" stroke="#9fb2a8" stroke-width="1"/>
+          <circle cx="170" cy="170" r="92" fill="none" stroke="#c7d3c8" stroke-width="1" stroke-dasharray="4 5"/>
+          <line x1="170" y1="170" x2="240" y2="111" stroke="#0f6b5c" stroke-width="2" marker-end="url(#arr1)"/>
+          <line x1="240" y1="111" x2="240" y2="170" stroke="#8aa196" stroke-width="1" stroke-dasharray="3 4"/>
+          <line x1="170" y1="170" x2="240" y2="170" stroke="#0f6b5c" stroke-width="4" opacity=".45"/>
+          <circle cx="240" cy="170" r="3.5" fill="#0f6b5c"/>
+          <path d="M199,170 A29,29 0 0 0 191,147" fill="none" stroke="#b2502f" stroke-width="1.4"/>
+          <text x="201" y="134" font-size="12" fill="#b2502f" font-family="Cambria Math, serif">ωt+φ</text>
+          <text x="153" y="188" font-size="12" fill="#465c52">O</text>
+          <text x="400" y="166" font-size="12" fill="#465c52">x</text>
+          <text x="176" y="26" font-size="12" fill="#465c52">y</text>
+          <text x="215" y="100" font-size="13" fill="#0f6b5c" font-family="Cambria Math, serif">A</text>
+          <text x="246" y="163" font-size="12" fill="#0f6b5c">x(t)</text>
+          <text x="214" y="196" font-size="11" fill="#7a8d83">x 轴投影 = 位移</text>
+          <text x="300" y="212" font-size="11" fill="#7a8d83">转过一圈 = 一个周期 T</text>
+        </svg>
+        <figcaption>旋转矢量：把“相位”翻译成“角度”，把“相位差”翻译成“夹角”</figcaption>
+      </figure>
+
+      <h3>4. 复数表示：<span class="tag">拓展</span></h3>
+      <div class="formula"><i>x</i> = Re[<i>A</i> e<sup>i(<i>ωt</i>+<i>φ</i>)</sup>] = Re[(<i>A</i> e<sup>i<i>φ</i></sup>) e<sup>i<i>ωt</i></sup>]</div>
+      <p>括号中的 <i>A</i>e<sup>i<i>φ</i></sup> 称为相量。旋转矢量是这个复数在复平面上的几何形象；用相量做加减、求导，比反复使用三角恒等式方便得多，这正是交流电路分析的基本工具。</p>
+
+      <h3>四种形式的对应关系</h3>
+      <div class="scroll-x">
+        <table>
+          <thead>
+            <tr><th style="width:20%">要素</th><th style="width:26%">解析式</th><th style="width:26%"><i>x</i>–<i>t</i> 曲线</th><th style="width:28%">旋转矢量</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>振幅 <i>A</i></td><td>余弦前的系数</td><td>曲线的峰值</td><td>矢量的长度</td></tr>
+            <tr><td>圆频率 <i>ω</i></td><td><i>t</i> 的系数</td><td>由 <i>T</i> 读出：<i>ω</i> = 2π/<i>T</i></td><td>逆时针旋转的角速度</td></tr>
+            <tr><td>初相 <i>φ</i></td><td>常数项</td><td><i>t</i> = 0 的 <i>x</i><sub>0</sub> 与斜率 <i>v</i><sub>0</sub></td><td><i>t</i> = 0 时与 <i>x</i> 轴的夹角</td></tr>
+            <tr><td>相位 <i>ωt</i>+<i>φ</i></td><td>括号内的整体</td><td>曲线走到周期的“第几份”</td><td>矢量转过的角度</td></tr>
+            <tr><td>周期 <i>T</i></td><td><i>ωT</i> = 2π</td><td>相邻同相点的时间间隔</td><td>旋转一整圈（360°）</td></tr>
+            <tr><td>相位差 Δ<i>φ</i></td><td>两相位式相减</td><td>两曲线的时间/状态差异</td><td>两矢量的夹角</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p><b>它们之间的联系可以一句话概括：</b>解析式是精确的“代数语言”，曲线是直观的“图像语言”，旋转矢量是把相位几何化的“几何语言”；三者描述的是同一个 <i>x</i>(<i>t</i>)，三要素一一对应。相位在解析式中是括号里的一个数，在曲线中是“走到了周期的哪里”，在旋转矢量中则是“转过了多少角度”。正因为相位可以看成一个角，相位差才可以同时读成时间差 Δ<i>t</i> = Δ<i>φ</i>/<i>ω</i> 和几何夹角，振动合成也才可以转化为矢量相加。</p>
+
+      <h2><span class="no">问题二</span>振动方程与波动方程中的相位</h2>
+
+      <h3>1. 振动方程中的相位：一个质点的时间刻度</h3>
+      <p>对 <i>x</i> = <i>A</i> cos(<i>ωt</i> + <i>φ</i>)，相位为</p>
+      <div class="formula"><i>Φ</i><sub>v</sub>(<i>t</i>) = <i>ωt</i> + <i>φ</i></div>
+      <p>它只随 <i>t</i> 变化，单位是弧度。给定相位，就确定了质点此刻的“运动状态”（位移和速度方向）：相位为 0 时在正最大位移处，π/2 时在平衡位置向负方向运动，π 时在负最大位移处，3π/2 时在平衡位置向正方向运动。<i>φ</i> 是 <i>t</i> = 0 时刻的相位，由振子的初始条件决定。</p>
+      <p>同一个振子在不同时刻的相位差为</p>
+      <div class="formula"><i>ΔΦ</i> = <i>ωΔt</i> = 2π <i>Δt</i>/<i>T</i></div>
+      <p>它只反映“时间先后”，不包含任何空间信息。</p>
+
+      <h3>2. 波动方程中的相位：一条波线的时空刻度</h3>
+      <p>沿 <i>x</i> 轴正方向传播的平面简谐波，波函数为</p>
+      <div class="formula"><i>y</i> = <i>A</i> cos[<i>ω</i>(<i>t</i> − <i>x</i>/<i>u</i>) + <i>φ</i>] = <i>A</i> cos(<i>ωt</i> − <i>kx</i> + <i>φ</i>)，&nbsp; <i>k</i> = 2π/<i>λ</i></div>
+      <p>其相位为</p>
+      <div class="formula"><i>Φ</i><sub>w</sub>(<i>x</i>,<i>t</i>) = <i>ωt</i> − <i>kx</i> + <i>φ</i></div>
+      <p>它同时依赖 <i>t</i> 和 <i>x</i>。<b>固定 <i>x</i></b>，得到该点的振动方程，其初相为 <i>φ</i> − <i>kx</i>；<b>固定 <i>t</i></b>，得到该时刻的波形图；<b>令相位不变</b>，<i>ωt</i> − <i>kx</i> + <i>φ</i> = 常数，两边微分得</p>
+      <div class="formula"><i>ω</i> d<i>t</i> − <i>k</i> d<i>x</i> = 0 &nbsp;⟹&nbsp; d<i>x</i>/d<i>t</i> = <i>ω</i>/<i>k</i> = <i>λ</i>/<i>T</i> = <i>u</i></div>
+      <p>这说明：<b>波速就是等相位面的推进速度（相速度）</b>。波传播的不是质点，而是“相位”这个状态标记。</p>
+      <p>波动中的相位差有两种来源：同一点先后两个时刻，Δ<i>Φ</i> = <i>ωΔt</i>；同一时刻沿传播方向相距 Δ<i>x</i> 的两点，</p>
+      <div class="formula"><i>ΔΦ</i> = −<i>kΔx</i> = −2π Δ<i>x</i>/<i>λ</i></div>
+      <p>负号表示沿传播方向相位依次落后。若波沿 −<i>x</i> 方向传播，则 <i>Φ</i> = <i>ωt</i> + <i>kx</i> + <i>φ</i>，Δ<i>Φ</i> = +<i>kΔx</i>。把两者合起来，就是统一形式</p>
+      <div class="formula"><i>ΔΦ</i> = <i>ωΔt</i> ∓ <i>kΔx</i>&nbsp;&nbsp;（沿 ±<i>x</i> 传播）</div>
+
+      <figure class="fig">
+        <svg viewBox="0 0 760 250" width="760" role="img" aria-label="振动曲线与波形图对比">
+          <defs>
+            <marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 z" fill="#465c52"/>
+            </marker>
+          </defs>
+          <!-- left: x-t -->
+          <text x="30" y="22" font-size="12.5" fill="#213d35" font-weight="700">振动曲线：固定位置 x</text>
+          <line x1="42" y1="150" x2="335" y2="150" stroke="#9fb2a8" stroke-width="1" marker-end="url(#arr2)"/>
+          <line x1="42" y1="205" x2="42" y2="55" stroke="#9fb2a8" stroke-width="1" marker-end="url(#arr2)"/>
+          <path d="M42,95 C72,95 72,205 102,205 C132,205 132,95 162,95 C192,95 192,205 222,205 C252,205 252,95 282,95 C302,95 312,105 322,118"
+                fill="none" stroke="#0f6b5c" stroke-width="2"/>
+          <line x1="42" y1="95" x2="330" y2="95" stroke="#c7d3c8" stroke-width="1" stroke-dasharray="3 5"/>
+          <line x1="42" y1="205" x2="330" y2="205" stroke="#c7d3c8" stroke-width="1" stroke-dasharray="3 5"/>
+          <text x="24" y="99" font-size="11" fill="#5d7068">A</text>
+          <text x="20" y="209" font-size="11" fill="#5d7068">−A</text>
+          <text x="330" y="166" font-size="11" fill="#5d7068">t</text>
+          <text x="26" y="50" font-size="11" fill="#5d7068">x</text>
+          <text x="152" y="175" font-size="10.5" fill="#7a8d83">T</text>
+          <text x="102" y="232" font-size="10.5" fill="#7a8d83">相位随时间推进 ωt</text>
+
+          <!-- right: y-x -->
+          <text x="420" y="22" font-size="12.5" fill="#213d35" font-weight="700">波形图：固定时刻 t</text>
+          <line x1="432" y1="150" x2="738" y2="150" stroke="#9fb2a8" stroke-width="1" marker-end="url(#arr2)"/>
+          <line x1="432" y1="205" x2="432" y2="55" stroke="#9fb2a8" stroke-width="1" marker-end="url(#arr2)"/>
+          <path d="M432,95 C462,95 462,205 492,205 C522,205 522,95 552,95 C582,95 582,205 612,205 C642,205 642,95 672,95 C692,95 702,105 712,118"
+                fill="none" stroke="#b2502f" stroke-width="2"/>
+          <line x1="432" y1="95" x2="732" y2="95" stroke="#c7d3c8" stroke-width="1" stroke-dasharray="3 5"/>
+          <text x="414" y="99" font-size="11" fill="#5d7068">A</text>
+          <text x="740" y="166" font-size="11" fill="#5d7068">x</text>
+          <text x="416" y="50" font-size="11" fill="#5d7068">y</text>
+          <line x1="492" y1="150" x2="492" y2="212" stroke="#b2502f" stroke-width="1" stroke-dasharray="2 3"/>
+          <line x1="612" y1="150" x2="612" y2="212" stroke="#b2502f" stroke-width="1" stroke-dasharray="2 3"/>
+          <text x="482" y="225" font-size="10.5" fill="#7a8d83">x₁</text>
+          <text x="602" y="225" font-size="10.5" fill="#7a8d83">x₂</text>
+          <text x="504" y="240" font-size="10.5" fill="#b2502f">同一时刻：Δφ = −2πΔx/λ</text>
+          <line x1="370" y1="35" x2="370" y2="220" stroke="#d7ded2" stroke-width="1"/>
+        </svg>
+        <figcaption>左：固定 <i>x</i>，相位只随时间走；右：固定 <i>t</i>，相位沿 <i>x</i> 铺开，形成波形</figcaption>
+      </figure>
+
+      <h3>3. 两者的区别</h3>
+      <div class="scroll-x">
+        <table>
+          <thead>
+            <tr><th style="width:19%">比较项</th><th style="width:40%">振动方程 <i>x</i> = <i>A</i>cos(<i>ωt</i>+<i>φ</i>)</th><th style="width:41%">波动方程 <i>y</i> = <i>A</i>cos(<i>ωt</i>−<i>kx</i>+<i>φ</i>)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>自变量</td><td>只有时间 <i>t</i></td><td>时间和位置 <i>x</i>、<i>t</i></td></tr>
+            <tr><td>描述对象</td><td>一个质点</td><td>波线上所有质点（整个波形）</td></tr>
+            <tr><td>相位表达式</td><td><i>ωt</i>+<i>φ</i></td><td><i>ωt</i>−<i>kx</i>+<i>φ</i></td></tr>
+            <tr><td>初相的含义</td><td>质点 <i>t</i> = 0 时的相位，由初始条件定</td><td>原点（波源）<i>t</i> = 0 时的相位；<i>x</i> 处质点的初相是 <i>φ</i>−<i>kx</i></td></tr>
+            <tr><td>相位差的来源</td><td>只来自时间差：Δ<i>φ</i> = <i>ωΔt</i></td><td>时间差 + 空间波程差：Δ<i>φ</i> = <i>ωΔt</i> − <i>kΔx</i></td></tr>
+            <tr><td>相位是否传播</td><td>不传播，只是同一质点状态随时间更替</td><td>以波速 <i>u</i> 传播；等相位面就是波面</td></tr>
+            <tr><td>几何意义</td><td><i>x</i>–<i>t</i> 图上的一条曲线</td><td><i>t</i> 时刻的一张波形图，随 <i>t</i> 平移</td></tr>
+            <tr><td>典型用途</td><td>求三要素、初相、相位差</td><td>求波函数、波形、干涉与驻波</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>4. 两者的联系</h3>
+      <ol>
+        <li><b>波动方程是振动方程在空间上的延拓。</b>固定 <i>x</i>，<i>y</i> = <i>A</i>cos(<i>ωt</i> − <i>kx</i> + <i>φ</i>) 就是该点的振动方程，只是初相变成 <i>φ</i> − <i>kx</i>。因此一个波函数里“装着”无数个振动方程；反过来，知道了波线上每一点的振动，也就知道了整个波。</li>
+        <li><b>波是相位的传播。</b>等相位点满足 <i>ωt</i> − <i>kx</i> + <i>φ</i> = 常数，它以速度 <i>u</i> = <i>ω</i>/<i>k</i> 前进。介质质点只在平衡位置附近振动，并不随波迁移；真正“跑”的是相位、振动状态和能量。</li>
+        <li><b>数学形式统一。</b>两者都是“圆频率 × 时间 ± 波数 × 位置 + 初相”的余弦函数，相位差都可写成 Δ<i>Φ</i> = <i>ωΔt</i> ∓ <i>kΔx</i>。振动取 Δ<i>x</i> = 0，波动取 Δ<i>t</i> = 0，就分别退化为各自熟悉的公式。</li>
+        <li><b>干涉与驻波是相位在空间中的叠加。</b>两列波在空间某点叠加，合振幅由 Δ<i>φ</i> = <i>φ</i><sub>2</sub> − <i>φ</i><sub>1</sub> − 2πΔ<i>r</i>/<i>λ</i> 决定；驻波则是相位分布被两列反向波“冻结”，相邻波节之间同相、波节两侧反相；半波损失本质上就是反射时相位突变 π。</li>
+        <li><b>初相的来源不同，但地位相同。</b>振动中的 <i>φ</i> 由振子的初始位移和速度决定；波动中的 <i>φ</i> 由波源（原点）的初相决定，再沿波线逐点减去 <i>kx</i>。两者都表示 <i>t</i> = 0 时刻的相位，都是通过初始条件或边界条件定出的积分常数。</li>
+        <li><b>能量图像互为对照。</b>振动中动能与势能反相变化、总能量守恒；波动中任一质元的动能与势能同相变化、总机械能不守恒，能量随相位一起向前传播。这一“反相/同相”的差别，正是“振动不传播能量、波传播能量”的微观原因。</li>
+      </ol>
+
+      <h3>5. 常见易错点</h3>
+      <ul>
+        <li>把波函数中的 <i>φ</i> 当成“<i>x</i> 处质点的初相”。实际上该点的初相是 <i>φ</i> − <i>kx</i>。</li>
+        <li>沿 +<i>x</i> 传播时，相位随 <i>x</i> 增大而<b>减小</b>（落后），所以 Δ<i>φ</i> = −2πΔ<i>x</i>/<i>λ</i>，不要漏掉负号。</li>
+        <li>把波形图的斜率当成质点速度。波形图斜率 ∂<i>y</i>/∂<i>x</i> 与质点速度 ∂<i>y</i>/∂<i>t</i> 满足 ∂<i>y</i>/∂<i>x</i> = −(1/<i>u</i>)∂<i>y</i>/∂<i>t</i>，二者不是一回事。</li>
+        <li>用 tan<i>φ</i> = −<i>v</i><sub>0</sub>/(<i>ωx</i><sub>0</sub>) 求初相时忘记判象限，导致相差 π。</li>
+        <li>把相位当成角度制。相位是弧度，Δ<i>φ</i> = 2πΔ<i>x</i>/<i>λ</i> 中的 2π 不能写成 360° 混用。</li>
+      </ul>
+
+      <div class="key">
+        <b>一句话记忆。</b>振动相位是钟表上的指针，只有时间在走；波动相位是沿波线铺开的一把刻度尺，时间在走，刻度本身也在向前传。波，就是“相位在跑”。
+      </div>
+
+      <div class="answer">
+        <h3>答题版（可直接整理到作业）</h3>
+        <p><b>（1）</b>课程中用三种形式描述简谐振动：①解析式 <i>x</i> = <i>A</i>cos(<i>ωt</i>+<i>φ</i>)；②<i>x</i>–<i>t</i> 曲线；③旋转矢量法（图解法）。三者描述同一振动，三要素一一对应：振幅 <i>A</i> 对应曲线峰值和矢量长度；<i>ω</i> 对应 <i>t</i> 的系数、2π/<i>T</i> 和矢量旋转角速度；初相 <i>φ</i> 对应 <i>t</i>=0 的初始条件（<i>x</i><sub>0</sub>、<i>v</i><sub>0</sub>）和 <i>t</i>=0 时矢量与 <i>x</i> 轴的夹角；相位 <i>ωt</i>+<i>φ</i> 对应曲线上的位置和矢量转过的角度。旋转矢量把相位几何化为角度，因此相位差就是夹角，振动合成就是矢量相加；若用复数表示，则 <i>x</i> = Re[<i>A</i>e<sup>i(<i>ωt</i>+<i>φ</i>)</sup>]，相量 <i>A</i>e<sup>i<i>φ</i></sup> 与旋转矢量一一对应。</p>
+        <p><b>（2）</b>振动方程 <i>x</i> = <i>A</i>cos(<i>ωt</i>+<i>φ</i>) 中的相位是 <i>Φ</i><sub>v</sub> = <i>ωt</i>+<i>φ</i>，只随时间变化，描述一个质点的运动状态，初相由初始条件决定，相位差 Δ<i>φ</i> = <i>ωΔt</i> 只反映时间先后。波动方程 <i>y</i> = <i>A</i>cos(<i>ωt</i>−<i>kx</i>+<i>φ</i>) 中的相位是 <i>Φ</i><sub>w</sub> = <i>ωt</i>−<i>kx</i>+<i>φ</i>，随时间和位置共同变化，描述波线上所有质点的集体状态，其初相是原点（波源）的初相，<i>x</i> 处质点的初相为 <i>φ</i>−<i>kx</i>；相位差 Δ<i>φ</i> = <i>ωΔt</i>−<i>kΔx</i>，既包含时间差也包含波程差。联系在于：固定 <i>x</i>，波动方程退化为该点的振动方程；波正是振动相位以速度 <i>u</i> = <i>ω</i>/<i>k</i> 在空间的传播，等相位面的推进速度就是波速。干涉、驻波和半波损失，本质上都是相位在空间分布与叠加的结果。</p>
+      </div>
+
+      <div class="end">PHYSICS · OSCILLATION &amp; WAVES</div>
+    </article>
+  </section>
+</main>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------------- data ---------------- */
+  const C = {
+    teal:"#4fd1c5", indigo:"#8fa6ff", cyan:"#5ec8f2",
+    amber:"#f0c05a", violet:"#c6a0ff", rose:"#ff8b98"
+  };
+
+  const tree = {
+    t:"振动与波动", n:"第 13–14 章",
+    children:[
+      /* ================= LEFT : 振动 ================= */
+      {
+        t:"简谐振动", n:"§13.1–13.3 · 振动是波动的源", c:C.teal, id:"vib",
+        children:[
+          {t:"动力学判据", children:[
+            {t:"F = −kx（回复力）"},
+            {t:"x″ + ω²x = 0"}
+          ]},
+          {t:"运动方程", n:"相位 = 振动的“时间标签”", children:[
+            {t:"x = A cos(ωt + φ)"},
+            {t:"三要素：A、ω、φ"},
+            {t:"A、φ 由初始条件定"}
+          ]},
+          {t:"三种描述", children:[
+            {t:"解析式：x(t)", id:"vib-parse"},
+            {t:"曲线：x–t 图"},
+            {t:"旋转矢量：投影", id:"vib-phase", n:"相位 → 角度"}
+          ]},
+          {t:"特征量", children:[
+            {t:"弹簧振子 ω = √(k/m)"},
+            {t:"单摆 ω = √(g/l)"},
+            {t:"复摆 ω = √(mgl/J)"}
+          ]},
+          {t:"运动学关系", children:[
+            {t:"v 超前 x：π/2"},
+            {t:"a 与 x 反相：π"},
+            {t:"Δφ = ωΔt = 2πΔt/T"}
+          ]},
+          {t:"能量", id:"vib-energy", n:"动能与势能反相变化", children:[
+            {t:"Ek = ½mv²，Ep = ½kx²"},
+            {t:"E = ½kA²（守恒）"},
+            {t:"平均 Ek = 平均 Ep = ¼kA²"}
+          ]}
+        ]
+      },
+      {
+        t:"合成与受迫", n:"§13.4–13.5 · 从简单到复杂", c:C.indigo, id:"synth",
+        children:[
+          {t:"同方向同频率", id:"vib-synth", n:"旋转矢量相加", children:[
+            {t:"A² = A₁² + A₂² + 2A₁A₂cosΔφ"},
+            {t:"加强：Δφ = 2kπ"},
+            {t:"减弱：Δφ = (2k+1)π"}
+          ]},
+          {t:"同方向不同频率", children:[
+            {t:"拍：振幅周期变化"},
+            {t:"拍频 |ν₂ − ν₁|"},
+            {t:"合振动不是简谐振动"}
+          ]},
+          {t:"相互垂直方向", children:[
+            {t:"轨迹：直线 / 圆 / 椭圆"},
+            {t:"利萨如图形"}
+          ]},
+          {t:"阻尼振动", children:[
+            {t:"x = Ae^(−δt)cos(ωt+φ)"},
+            {t:"欠阻尼 / 临界 / 过阻尼"}
+          ]},
+          {t:"受迫与共振", children:[
+            {t:"稳态频率 = 驱动频率"},
+            {t:"位移共振 ωr = √(ω₀²−2δ²)"},
+            {t:"速度共振 ωp = ω₀"}
+          ]}
+        ]
+      },
+
+      /* ================= RIGHT : 波动 ================= */
+      {
+        t:"波的形成与描述", n:"§14.1–14.2 · 振动在空间传播", c:C.cyan, id:"wave",
+        children:[
+          {t:"产生条件", children:[
+            {t:"波源 + 弹性介质"},
+            {t:"传播相位与能量，质点不迁移"}
+          ]},
+          {t:"分类", children:[
+            {t:"横波：振动 ⊥ 传播"},
+            {t:"纵波：振动 ∥ 传播"},
+            {t:"平面波 / 球面波"}
+          ]},
+          {t:"波参量", children:[
+            {t:"u = λν = λ/T"},
+            {t:"ν 由波源定，u 由介质定", n:"换介质：ν 不变，λ、u 变"}
+          ]},
+          {t:"几何图像", children:[
+            {t:"波线、波面、波前"}
+          ]},
+          {t:"波函数", id:"wave-func", n:"相位 = ωt − kx + φ，k = 2π/λ", children:[
+            {t:"y = A cos[ω(t − x/u) + φ]"},
+            {t:"y = A cos(ωt − kx + φ)"}
+          ]},
+          {t:"三种读法", children:[
+            {t:"x 定 → 该点振动方程"},
+            {t:"t 定 → 波形图（快照）"},
+            {t:"x、t 都变 → 行波"}
+          ]}
+        ]
+      },
+      {
+        t:"波的能量与传播", n:"§14.3–14.4", c:C.amber, id:"energy",
+        children:[
+          {t:"能量密度", children:[
+            {t:"w = ρA²ω²sin²(ωt−kx)"},
+            {t:"动能与势能同相变化"}
+          ]},
+          {t:"能流与波强", id:"wave-energy", n:"能量随相位一起传播", children:[
+            {t:"I = ½ρA²ω²u"},
+            {t:"球面波 I ∝ 1/r²"}
+          ]},
+          {t:"惠更斯原理", children:[
+            {t:"子波源 + 包络面"},
+            {t:"解释衍射、反射、折射"}
+          ]},
+          {t:"衍射", children:[
+            {t:"缝宽 / 障碍 ≈ λ 时明显"}
+          ]}
+        ]
+      },
+      {
+        t:"干涉与驻波", n:"§14.5–14.6 · 相位的空间叠加", c:C.violet, id:"interference",
+        children:[
+          {t:"相干条件", children:[
+            {t:"同频率、同振动方向"},
+            {t:"恒定相位差"}
+          ]},
+          {t:"干涉", id:"interf", n:"相位差决定强弱", children:[
+            {t:"Δφ = φ₂−φ₁−2πΔr/λ"},
+            {t:"加强 2kπ；减弱 (2k+1)π", n:"初相相同 → 用波程差判断"}
+          ]},
+          {t:"驻波", children:[
+            {t:"等幅反向波叠加"},
+            {t:"波节 / 波腹"},
+            {t:"相邻间距 λ/2"},
+            {t:"不传播能量"}
+          ]},
+          {t:"半波损失", children:[
+            {t:"波疏 → 波密：相位突变 π"},
+            {t:"反射点为波节"}
+          ]},
+          {t:"简正模式", children:[
+            {t:"λn = 2L/n"},
+            {t:"νn = nν₁（基频、谐频）"}
+          ]}
+        ]
+      },
+      {
+        t:"多普勒与电磁波", n:"§14.7 · 10-7 · 拓展", c:C.rose, id:"doppler",
+        children:[
+          {t:"多普勒效应", children:[
+            {t:"ν′ = ν(u ± v_B)/(u ∓ v_S)"},
+            {t:"靠近 → 观测频率升高"},
+            {t:"彩超、测速、天体红移"}
+          ]},
+          {t:"冲击波", children:[
+            {t:"v_S > u"},
+            {t:"马赫锥 sinθ = u/v_S"}
+          ]},
+          {t:"平面电磁波", children:[
+            {t:"E ⊥ B ⊥ u，E 与 B 同相"},
+            {t:"E = cB"},
+            {t:"c = 1/√(μ₀ε₀)"}
+          ]}
+        ]
+      }
+    ]
+  };
+
+  /* ---------------- layout ---------------- */
+  const stage = document.getElementById("stage");
+  const world = document.getElementById("world");
+  const svg = document.getElementById("links");
+  const NS = "http://www.w3.org/2000/svg";
+
+  const fontOf = d => d===0 ? '700 22px "Source Han Serif SC","Songti SC",serif'
+                    : d===1 ? '600 15px "Microsoft YaHei",sans-serif'
+                    : d===2 ? '13px "Microsoft YaHei",sans-serif'
+                    : '12.2px "Microsoft YaHei",sans-serif';
+  const noteFont = d => d===1 ? '10.8px "Microsoft YaHei",sans-serif' : '10.2px "Microsoft YaHei",sans-serif';
+
+  const cv = document.createElement("canvas").getContext("2d");
+  function textW(t,f){ cv.font=f; return cv.measureText(t).width; }
+
+  const collapsed = new Set();
+  let showLogic = false;
+  let selected = null, focused = null;
+
+  const rootW = 206, rootH = 88;
+  const root = {t:tree.t, n:tree.n, depth:0, w:rootW, h:rootH, children:tree.children};
+
+  let allNodes = [];
+  let bbox = {x:0,y:0,w:1,h:1};
+
+  const parents = new Map();
+  (function linkParents(n){
+    (n.children||[]).forEach(c=>{ parents.set(c,n); linkParents(c); });
+  })(root);
+
+  const nodeById = new Map();
+  const allNodeList = [];
+  (function indexAll(n){
+    allNodeList.push(n);
+    if(n.id) nodeById.set(n.id,n);
+    (n.children||[]).forEach(indexAll);
+  })(root);
+
+  function prep(n, depth){
+    n.depth = depth;
+    n.w = Math.min(360, Math.max(100, Math.max(textW(n.t,fontOf(depth)), n.n?textW(n.n,noteFont(depth)):0) + (depth===1?34:30)));
+    n.h = n.n ? (depth===1?54:42) : (depth===1?38:28);
+    if(n.children) n.children.forEach(c=>prep(c,depth+1));
+  }
+
+  function layoutSide(branches){
+    let maxW = {};
+    (function scan(list,d){
+      list.forEach(n=>{
+        maxW[d] = Math.max(maxW[d]||0, n.w);
+        if(n.children && !collapsed.has(n)) scan(n.children,d+1);
+      });
+    })(branches,1);
+
+    const colX = {}; colX[1] = rootW/2 + 64;
+    const maxD = Math.max(...Object.keys(maxW).map(Number));
+    for(let d=2; d<=maxD; d++) colX[d] = colX[d-1] + (maxW[d-1]||0) + 66;
+
+    let cursor = 0;
+    function place(n){
+      n.x = colX[n.depth] || 0;
+      if(!n.children || n.children.length===0 || collapsed.has(n)){
+        n.y = cursor + n.h/2;
+        cursor += n.h + 7;
+      }else{
+        n.children.forEach(place);
+        n.y = (n.children[0].y + n.children[n.children.length-1].y)/2;
+      }
+    }
+    branches.forEach((b,i)=>{
+      if(i) cursor += 20;
+      place(b);
+    });
+
+    let top = Infinity, bot = -Infinity;
+    (function scanY(list){
+      list.forEach(n=>{
+        top = Math.min(top, n.y - n.h/2);
+        bot = Math.max(bot, n.y + n.h/2);
+        if(n.children && !collapsed.has(n)) scanY(n.children);
+      });
+    })(branches);
+    const shift = -(top+bot)/2;
+    (function shiftY(list){
+      list.forEach(n=>{
+        n.y += shift;
+        if(n.children && !collapsed.has(n)) shiftY(n.children);
+      });
+    })(branches);
+  }
+
+  function prepare(){
+    allNodes = [];
+    root.w = rootW; root.h = rootH; root.depth = 0; root.x = -rootW/2; root.y = -rootH/2;
+    tree.children.forEach(c=>prep(c,1));
+    (function inherit(list, color){
+      list.forEach(n=>{
+        if(n.c) color = n.c;
+        else n.c = color;
+        if(n.children) inherit(n.children, color);
+      });
+    })(tree.children, "#8fa9b0");
+
+    const left = tree.children.slice(0,2);
+    const right = tree.children.slice(2);
+    const mobileHub = window.matchMedia("(max-width:620px)").matches &&
+      tree.children.every(b=>collapsed.has(b));
+    if(mobileHub){
+      root.x = -rootW/2;
+      root.y = -rootH/2;
+      let cy = rootH/2 + 58;
+      tree.children.forEach(b=>{
+        b.x = -b.w/2;
+        b.y = cy + b.h/2;
+        b.dir = "r";
+        cy += b.h + 24;
+      });
+    }else{
+      layoutSide(left);
+      layoutSide(right);
+      (function mirror(list){
+        list.forEach(n=>{
+          n.x = -n.x - n.w;
+          if(n.children && !collapsed.has(n)) mirror(n.children);
+        });
+      })(left);
+      (function setDir(list,dir){
+        list.forEach(n=>{
+          n.dir = dir;
+          if(n.children && !collapsed.has(n)) setDir(n.children,dir);
+        });
+      })(left,"l");
+      (function setDir(list,dir){
+        list.forEach(n=>{
+          n.dir = dir;
+          if(n.children && !collapsed.has(n)) setDir(n.children,dir);
+        });
+      })(right,"r");
+    }
+
+    (function collect(n){
+      allNodes.push(n);
+      if(n.children && !collapsed.has(n)) n.children.forEach(collect);
+    })(root);
+
+    let x1=Infinity,y1=Infinity,x2=-Infinity,y2=-Infinity;
+    allNodes.forEach(n=>{
+      x1=Math.min(x1,n.x); y1=Math.min(y1,n.y-n.h/2);
+      x2=Math.max(x2,n.x+n.w); y2=Math.max(y2,n.y+n.h/2);
+    });
+    bbox = {x:x1-40,y:y1-40,w:(x2-x1)+80,h:(y2-y1)+80};
+  }
+
+  function pathOf(n){
+    const p = [];
+    let x = n;
+    while(x){ p.unshift(x); x = parents.get(x); }
+    return p;
+  }
+
+  function expandAncestors(n){
+    let p = parents.get(n);
+    while(p){ collapsed.delete(p); p = parents.get(p); }
+  }
+
+  function subtreeBox(n){
+    let x1=Infinity,y1=Infinity,x2=-Infinity,y2=-Infinity;
+    (function walk(m){
+      x1=Math.min(x1,m.x); y1=Math.min(y1,m.y-m.h/2);
+      x2=Math.max(x2,m.x+m.w); y2=Math.max(y2,m.y+m.h/2);
+      if(m.children && !collapsed.has(m)) m.children.forEach(walk);
+    })(n);
+    return {x:x1-18,y:y1-18,w:(x2-x1)+36,h:(y2-y1)+36};
+  }
+
+  function collapseFormulaGroups(){
+    tree.children.forEach(b=>{
+      if(b.children && b.children.length) collapsed.add(b);
+      (b.children||[]).forEach(g=>{
+        if(g.children && g.children.length) collapsed.add(g);
+      });
+    });
+  }
+
+  /* ---------------- render ---------------- */
+  function el(tag, cls, txt){
+    const e = document.createElement(tag);
+    if(cls) e.className = cls;
+    if(txt != null) e.textContent = txt;
+    return e;
+  }
+
+  function render(){
+    prepare();
+    world.querySelectorAll(".node").forEach(n=>n.remove());
+    allNodes.forEach(n=>{
+      const d = el("div","node d"+n.depth);
+      d.title = n.t;
+      if(n.children && n.children.length) d.classList.add("has-kids");
+      d.style.setProperty("--c", n.c || "#8fa9b0");
+      d.style.left = n.x+"px";
+      d.style.top = (n.y-n.h/2)+"px";
+      d.style.width = n.w+"px";
+      d.style.height = n.h+"px";
+      if(n.depth===0) d.style.setProperty("--c","#4fd1c5");
+      d.dataset.dir = n.dir || (n.x < 0 ? "l" : "r");
+
+      d.appendChild(el("span","t",n.t));
+      if(n.n) d.appendChild(el("span","n",n.n));
+
+      if(n.children && n.children.length){
+        const tg = el("span","toggle", collapsed.has(n) ? "+" : "−");
+        tg.setAttribute("role","button");
+        tg.setAttribute("aria-label", collapsed.has(n) ? "展开" : "收起");
+        tg.addEventListener("click", ev=>{
+          ev.stopPropagation();
+          if(suppressClick){ suppressClick = false; return; }
+          if(isMobileHub() && n.depth===1){ focusNode(n,true,false); return; }
+          if(collapsed.has(n)) collapsed.delete(n); else collapsed.add(n);
+          render();
+          if(!focused) fit(false);
+        });
+        d.appendChild(tg);
+      }
+
+      d.addEventListener("click", ev=>{
+        if(suppressClick){ suppressClick = false; return; }
+        if(isMobileHub() && n.depth===1){ focusNode(n,true,false); return; }
+        selectNode(n,true);
+      });
+      d.addEventListener("dblclick", ev=>{
+        ev.stopPropagation();
+        focusNode(n,true,false);
+      });
+
+      if(selected===n) d.classList.add("selected");
+      world.appendChild(d);
+      n._el = d;
+    });
+    drawLinks();
+    drawLogic();
+  }
+
+  function childVisible(n){
+    return n.children && !collapsed.has(n);
+  }
+
+  function isMobileHub(){
+    return window.matchMedia("(max-width:620px)").matches &&
+      tree.children.every(b=>collapsed.has(b));
+  }
+
+  function drawLinks(){
+    svg.innerHTML = "";
+    function link(p,c){
+      const right = c.x >= p.x;
+      const x1 = right ? p.x+p.w : p.x;
+      const x2 = right ? c.x : c.x+c.w;
+      const y1 = p.y, y2 = c.y;
+      const dx = Math.max(34, Math.abs(x2-x1)*0.48);
+      const c1 = x1 + (right?dx:-dx);
+      const c2 = x2 + (right?-dx:dx);
+      const path = document.createElementNS(NS,"path");
+      path.setAttribute("d",`M${x1},${y1} C${c1},${y1} ${c2},${y2} ${x2},${y2}`);
+      path.setAttribute("fill","none");
+      path.setAttribute("stroke", c.c || p.c || "#5b8f8b");
+      path.setAttribute("stroke-width", p.depth===0 ? 2 : 1.25);
+      path.setAttribute("stroke-opacity", p.depth===0 ? .55 : .38);
+      svg.appendChild(path);
+    }
+    (function walk(n){
+      if(!childVisible(n)) return;
+      for(const c of n.children){ link(n,c); walk(c); }
+    })(root);
+  }
+
+  /* ---------------- logic overlay ---------------- */
+  const logicPairs = [
+    {a:"vib-phase", b:"wave-func", i:1, bend:-250},
+    {a:"vib-synth", b:"interf", i:2, bend:260},
+    {a:"vib-energy", b:"wave-energy", i:3, bend:330}
+  ];
+
+  function findNode(id){
+    return allNodes.find(n=>n.id===id && n._el);
+  }
+
+  function drawLogic(){
+    svg.querySelectorAll(".logic-el").forEach(e=>e.remove());
+    if(!showLogic) return;
+    logicPairs.forEach(p=>{
+      const A = findNode(p.a), B = findNode(p.b);
+      if(!A || !B) return;
+      const ax = A.x+A.w/2, ay=A.y, bx = B.x+B.w/2, by = B.y;
+      const mx=(ax+bx)/2, my=(ay+by)/2;
+      const dx=bx-ax, dy=by-ay, len=Math.hypot(dx,dy)||1;
+      const cx = mx + (-dy/len)*p.bend;
+      const cy = my + (dx/len)*p.bend + (p.bend>0? 90 : -90);
+      const path = document.createElementNS(NS,"path");
+      path.setAttribute("class","logic-el");
+      path.setAttribute("d",`M${ax},${ay} Q${cx},${cy} ${bx},${by}`);
+      path.setAttribute("fill","none");
+      path.setAttribute("stroke","#efc05c");
+      path.setAttribute("stroke-width","1.4");
+      path.setAttribute("stroke-dasharray","6 7");
+      path.setAttribute("stroke-opacity",".5");
+      svg.appendChild(path);
+      const qx = .25*ax + .5*cx + .25*bx;
+      const qy = .25*ay + .5*cy + .25*by;
+      const g = document.createElementNS(NS,"g");
+      g.setAttribute("class","logic-el");
+      const circ = document.createElementNS(NS,"circle");
+      circ.setAttribute("cx",qx); circ.setAttribute("cy",qy); circ.setAttribute("r","11");
+      circ.setAttribute("fill","#0b1f28"); circ.setAttribute("stroke","#efc05c"); circ.setAttribute("stroke-opacity",".75");
+      const tx = document.createElementNS(NS,"text");
+      tx.setAttribute("x",qx); tx.setAttribute("y",qy+3.5); tx.setAttribute("text-anchor","middle");
+      tx.setAttribute("font-size","10"); tx.setAttribute("fill","#efc05c"); tx.setAttribute("font-family","sans-serif");
+      tx.textContent = p.i;
+      g.appendChild(circ); g.appendChild(tx);
+      svg.appendChild(g);
+    });
+  }
+
+  /* ---------------- view transform ---------------- */
+  const view = {x:0,y:0,k:1};
+  function apply(){
+    world.style.transform = `translate(${view.x}px,${view.y}px) scale(${view.k})`;
+  }
+  function animateTransform(){
+    world.style.transition = "transform .32s cubic-bezier(.2,.7,.2,1)";
+    setTimeout(()=>{ world.style.transition = ""; },340);
+  }
+  function detailWidth(){
+    return document.getElementById("detail").classList.contains("open") && window.innerWidth > 780 ? 360 : 0;
+  }
+  function panelHeight(){
+    const d = document.getElementById("detail");
+    if(window.innerWidth > 780 || !d.classList.contains("open")) return 0;
+    return Math.max(0, d.offsetHeight);
+  }
+  function setViewBox(box, opt){
+    opt = opt || {};
+    const r = stage.getBoundingClientRect();
+    const pad = opt.pad == null ? 52 : opt.pad;
+    const minK = opt.minK == null ? .18 : opt.minK;
+    const maxK = opt.maxK == null ? .98 : opt.maxK;
+    const availW = Math.max(180, r.width - detailWidth());
+    const availH = Math.max(140, r.height - panelHeight());
+    let k = Math.min(maxK, (availW-pad*2)/box.w, (availH-pad*2)/box.h);
+    k = Math.max(minK, k);
+    view.k = k;
+    view.x = (availW - box.w*k)/2 - box.x*k;
+    view.y = (availH - box.h*k)/2 - box.y*k;
+    if(opt.animate) animateTransform();
+    apply();
+  }
+  function fit(animate){
+    const poster = document.body.classList.contains("poster");
+    setViewBox(bbox,{pad: poster?34:52, animate:!!animate, maxK:.98, minK:.18});
+  }
+  function zoomAt(clientX, clientY, factor){
+    const r = stage.getBoundingClientRect();
+    const mx = clientX - r.left, my = clientY - r.top;
+    const k2 = Math.min(2.6, Math.max(.16, view.k * factor));
+    view.x = mx - (mx - view.x) * (k2 / view.k);
+    view.y = my - (my - view.y) * (k2 / view.k);
+    view.k = k2;
+    world.style.transition = "";
+    apply();
+  }
+  function centerNode(n){
+    if(!n._el) revealNode(n);
+    const r = stage.getBoundingClientRect();
+    const availW = Math.max(180, r.width - detailWidth());
+    const availH = Math.max(140, r.height - panelHeight());
+    const k = Math.min(1.55, Math.max(view.k, 1.05));
+    view.k = k;
+    view.x = availW/2 - (n.x + n.w/2) * k;
+    view.y = availH/2 - n.y * k;
+    animateTransform();
+    apply();
+  }
+
+  /* ---------------- focus / detail ---------------- */
+  const backAll = document.getElementById("back-all");
+  const focusName = document.getElementById("focus-name");
+  const detail = document.getElementById("detail");
+  const scrim = document.getElementById("scrim");
+  const detailCrumb = document.getElementById("detail-crumb");
+  const detailTitle = document.getElementById("detail-title");
+  const detailNote = document.getElementById("detail-note");
+  const detailBody = document.getElementById("detail-body");
+  const btnFocus = document.getElementById("btn-focus");
+  const btnLocate = document.getElementById("btn-locate");
+
+  const rail = document.getElementById("rail");
+  const railBtns = new Map();
+  tree.children.forEach(b=>{
+    const btn = document.createElement("button");
+    btn.style.setProperty("--c", b.c || "#4fd1c5");
+    btn.appendChild(el("i"));
+    btn.appendChild(document.createTextNode(b.t));
+    btn.addEventListener("click", ()=>focusNode(b,true,false));
+    rail.appendChild(btn);
+    railBtns.set(b, btn);
+  });
+  function updateRail(n){
+    const path = n ? new Set(pathOf(n)) : new Set();
+    railBtns.forEach((btn,b)=>btn.classList.toggle("on", path.has(b)));
+  }
+
+  function setHash(h){
+    try { history.replaceState(null, "", h); } catch(e) { /* file:// */ }
+  }
+
+  function revealNode(n){
+    expandAncestors(n);
+    const p = parents.get(n);
+    if(p) collapsed.delete(p);
+    render();
+  }
+
+  function selectNode(n, openPanel){
+    if(!n._el) revealNode(n);
+    selected = n;
+    allNodes.forEach(m=>{ if(m._el) m._el.classList.toggle("selected", m===n); });
+    updateRail(n);
+    if(openPanel){
+      showDetail(n);
+      if(window.innerWidth <= 780) centerNode(n);
+    }
+  }
+
+  function showDetail(n){
+    detail.classList.add("open");
+    detail.setAttribute("aria-hidden","false");
+    scrim.classList.add("show");
+    detailCrumb.textContent = pathOf(n).slice(1).map(x=>x.t).join("  /  ");
+    detailTitle.textContent = n.t;
+    detailNote.textContent = n.n || "";
+    detailNote.style.display = n.n ? "" : "none";
+    btnFocus.hidden = !(n.children && n.children.length);
+    btnFocus.onclick = ()=>focusNode(n,true);
+    btnLocate.onclick = ()=>{ centerNode(n); };
+    detailBody.innerHTML = "";
+
+    const kids = n.children || [];
+    const parent = parents.get(n);
+    const list = kids.length ? kids : (parent ? (parent.children || []) : []);
+    const head = el("div","detail-sec");
+    head.textContent = kids.length ? `包含 ${kids.length} 个要点` : "同一组中的要点";
+    detailBody.appendChild(head);
+
+    list.forEach(c=>{
+      const row = el("div","drow" + (c===n ? " cur" : "") + ((c.children && c.children.length) ? "" : " leaf"));
+      row.style.setProperty("--c", c.c || n.c || "#4fd1c5");
+      row.appendChild(el("div","",c.t));
+      if(c.n){
+        const sm = el("small","",c.n);
+        row.appendChild(sm);
+      }
+      row.addEventListener("click",()=>{
+        let changed = false;
+        if(c.children && c.children.length && collapsed.delete(c)) changed = true;
+        if(changed) render();
+        selectNode(c,true);
+        if(!c.children || !c.children.length) centerNode(c);
+      });
+      detailBody.appendChild(row);
+    });
+  }
+
+  function closeDetail(){
+    detail.classList.remove("open");
+    detail.setAttribute("aria-hidden","true");
+    scrim.classList.remove("show");
+  }
+
+  function focusNode(n, animate, withPanel){
+    expandAncestors(n);
+    collapsed.delete(n);
+    render();
+    selected = n;
+    allNodes.forEach(m=>{ if(m._el) m._el.classList.toggle("selected", m===n); });
+    updateRail(n);
+    if(withPanel === false) closeDetail(); else showDetail(n);
+    const fpad = window.matchMedia("(max-width:620px)").matches ? 24 : 84;
+    setViewBox(subtreeBox(n),{pad:fpad, animate:!!animate, maxK:1.22, minK:.42});
+    focused = n;
+    backAll.hidden = false;
+    focusName.hidden = false;
+    focusName.textContent = pathOf(n).slice(1).map(x=>x.t).join("  /  ");
+    if(n.id) setHash("#focus=" + encodeURIComponent(n.id));
+    else setHash("#map");
+  }
+
+  function clearFocus(animate){
+    focused = null;
+    backAll.hidden = true;
+    focusName.hidden = true;
+    setHash("#map");
+    updateRail(null);
+    tree.children.forEach(b=>collapsed.add(b));
+    render();
+    fit(!!animate);
+  }
+
+  backAll.addEventListener("click", ()=>{ clearFocus(true); closeDetail(); });
+  document.getElementById("detail-close").addEventListener("click", closeDetail);
+  scrim.addEventListener("click", closeDetail);
+
+  /* ---------------- pointer: pan / pinch / double tap ---------------- */
+  const pointers = new Map();
+  let drag = null, pinch = null, moved = false, suppressClick = false, lastTap = null;
+
+  stage.addEventListener("pointerdown", e=>{
+    if(e.button !== undefined && e.button !== 0) return;
+    if(e.target.closest(".back-all,.rail")) return;
+    pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    stage.classList.add("dragging");
+    if(pointers.size === 1){
+      drag = {sx:e.clientX, sy:e.clientY, vx:view.x, vy:view.y};
+      pinch = null;
+      moved = false;
+    }else if(pointers.size === 2){
+      drag = null;
+      const a = [...pointers.values()];
+      const r = stage.getBoundingClientRect();
+      pinch = {
+        d: Math.hypot(a[0].x-a[1].x, a[0].y-a[1].y) || 1,
+        mx: (a[0].x+a[1].x)/2 - r.left,
+        my: (a[0].y+a[1].y)/2 - r.top,
+        k: view.k, vx: view.x, vy: view.y
+      };
+      moved = true;
+    }
+  });
+
+  window.addEventListener("pointermove", e=>{
+    if(!pointers.has(e.pointerId)) return;
+    pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(pointers.size >= 2 && pinch){
+      const a = [...pointers.values()];
+      const d = Math.hypot(a[0].x-a[1].x, a[0].y-a[1].y) || 1;
+      const r = stage.getBoundingClientRect();
+      const mx = (a[0].x+a[1].x)/2 - r.left;
+      const my = (a[0].y+a[1].y)/2 - r.top;
+      const k = Math.min(2.6, Math.max(.16, pinch.k * d / pinch.d));
+      view.k = k;
+      view.x = mx - (mx - pinch.vx) * (k / pinch.k);
+      view.y = my - (my - pinch.vy) * (k / pinch.k);
+      world.style.transition = "";
+      apply();
+      moved = true;
+    }else if(drag){
+      const dx = e.clientX - drag.sx, dy = e.clientY - drag.sy;
+      if(Math.abs(dx)+Math.abs(dy) > 3) moved = true;
+      view.x = drag.vx + dx;
+      view.y = drag.vy + dy;
+      apply();
+    }
+  });
+
+  function endPointer(e){
+    if(!pointers.has(e.pointerId)) return;
+    pointers.delete(e.pointerId);
+    if(pointers.size === 1){
+      const p = [...pointers.values()][0];
+      drag = {sx:p.x, sy:p.y, vx:view.x, vy:view.y};
+      pinch = null;
+    }else if(pointers.size === 0){
+      stage.classList.remove("dragging");
+      suppressClick = moved;
+      setTimeout(()=>{ suppressClick = false; }, 360);
+      if(!moved && e.pointerType === "touch"){
+        const now = Date.now();
+        if(lastTap && now-lastTap.t < 330 && Math.hypot(e.clientX-lastTap.x, e.clientY-lastTap.y) < 30){
+          zoomAt(e.clientX, e.clientY, view.k > 1.5 ? .58 : 1.85);
+          suppressClick = true;
+          lastTap = null;
+        }else{
+          lastTap = {t:now, x:e.clientX, y:e.clientY};
+        }
+      }
+      drag = null;
+      pinch = null;
+    }
+  }
+  window.addEventListener("pointerup", endPointer);
+  window.addEventListener("pointercancel", endPointer);
+
+  stage.addEventListener("wheel", e=>{
+    e.preventDefault();
+    zoomAt(e.clientX, e.clientY, Math.exp(-e.deltaY * 0.0013));
+  }, {passive:false});
+
+  stage.addEventListener("dblclick", e=>{
+    if(e.target.closest(".node")) return;
+    zoomAt(e.clientX, e.clientY, view.k > 1.5 ? .58 : 1.8);
+  });
+
+  stage.addEventListener("click", e=>{
+    if(e.target === stage && !suppressClick) closeDetail();
+  });
+
+  /* ---------------- search ---------------- */
+  const search = document.getElementById("search");
+  const results = document.getElementById("results");
+  const searchIndex = allNodeList.filter(n=>n!==root).map(n=>({
+    n,
+    path: pathOf(n).slice(1,-1).map(x=>x.t).join(" / ")
+  }));
+
+  function runSearch(){
+    const q = search.value.trim().toLowerCase();
+    results.innerHTML = "";
+    if(!q){ results.classList.remove("show"); return; }
+    const hits = searchIndex.filter(x=>
+      x.n.t.toLowerCase().includes(q) || (x.n.n && x.n.n.toLowerCase().includes(q))
+    ).slice(0,9);
+    if(!hits.length){
+      const d = el("div","empty","没有找到相关知识点");
+      results.appendChild(d);
+    }
+    hits.forEach(x=>{
+      const b = document.createElement("button");
+      b.appendChild(document.createTextNode(x.n.t));
+      const sm = el("small","", x.path || "第 13–14 章");
+      b.appendChild(sm);
+      b.addEventListener("click",()=>{
+        search.value = "";
+        results.classList.remove("show");
+        focusNode(x.n, true);
+      });
+      results.appendChild(b);
+    });
+    results.classList.add("show");
+  }
+  search.addEventListener("input", runSearch);
+  search.addEventListener("focus", ()=>{ if(search.value.trim()) runSearch(); });
+  search.addEventListener("keydown", e=>{
+    if(e.key === "Escape"){ search.value=""; results.classList.remove("show"); search.blur(); }
+  });
+  document.addEventListener("click", e=>{
+    if(!e.target.closest(".searchwrap")) results.classList.remove("show");
+  });
+
+  /* ---------------- ui ---------------- */
+  const tabMap = document.getElementById("tab-map");
+  const tabPhase = document.getElementById("tab-phase");
+
+  function setView(which){
+    document.body.classList.toggle("phase", which==="phase");
+    tabMap.classList.toggle("on", which==="map");
+    tabPhase.classList.toggle("on", which==="phase");
+    if(which === "phase"){
+      closeDetail();
+      setHash("#phase");
+      return;
+    }
+    setHash(focused && focused.id ? "#focus=" + encodeURIComponent(focused.id) : "#map");
+    if(!focused && window.matchMedia("(max-width:620px)").matches){
+      tree.children.forEach(b=>collapsed.add(b));
+      render();
+    }
+    requestAnimationFrame(()=>{
+      const po = detail.classList.contains("open");
+      if(focused) focusNode(focused,false,po); else fit(false);
+    });
+  }
+  tabMap.addEventListener("click",()=>setView("map"));
+  tabPhase.addEventListener("click",()=>setView("phase"));
+
+  document.getElementById("z-in").addEventListener("click",()=>{
+    const r = stage.getBoundingClientRect();
+    zoomAt(r.left + r.width/2, r.top + r.height/2, 1.2);
+  });
+  document.getElementById("z-out").addEventListener("click",()=>{
+    const r = stage.getBoundingClientRect();
+    zoomAt(r.left + r.width/2, r.top + r.height/2, 1/1.2);
+  });
+  document.getElementById("z-fit").addEventListener("click",()=>{ clearFocus(true); closeDetail(); });
+  document.getElementById("z-logic").addEventListener("click",e=>{
+    showLogic = !showLogic;
+    e.currentTarget.classList.toggle("on", showLogic);
+    e.currentTarget.style.color = showLogic ? "#efc05c" : "";
+    e.currentTarget.style.borderColor = showLogic ? "rgba(239,192,92,.55)" : "";
+    if(showLogic){
+      logicPairs.forEach(p=>{
+        [p.a,p.b].forEach(id=>{
+          const n = nodeById.get(id);
+          if(n) expandAncestors(n);
+        });
+      });
+      render();
+      if(!focused) fit(false);
+    }
+    drawLogic();
+  });
+  document.getElementById("z-all").addEventListener("click",e=>{
+    const btn = e.currentTarget;
+    const anyCollapsed = [...collapsed].some(n=>n.children && n.children.length);
+    if(anyCollapsed){
+      collapsed.clear();
+      btn.textContent = "收起全部";
+    }else{
+      collapseFormulaGroups();
+      btn.textContent = "展开全部";
+    }
+    focused = null;
+    backAll.hidden = true;
+    focusName.hidden = true;
+    setHash("#map");
+    render();
+    fit(true);
+  });
+
+  document.addEventListener("keydown", e=>{
+    if(e.key === "Escape"){
+      if(results.classList.contains("show")){
+        results.classList.remove("show"); search.blur();
+      }else{
+        closeDetail();
+      }
+    }
+    if(e.target.tagName === "INPUT") return;
+    if(e.key === "+" || e.key === "="){
+      const r = stage.getBoundingClientRect();
+      zoomAt(r.left + r.width/2, r.top + r.height/2, 1.2);
+    }else if(e.key === "-"){
+      const r = stage.getBoundingClientRect();
+      zoomAt(r.left + r.width/2, r.top + r.height/2, 1/1.2);
+    }else if(e.key === "0"){
+      clearFocus(true);
+    }
+  });
+
+  let resizeT = null;
+  window.addEventListener("resize",()=>{
+    clearTimeout(resizeT);
+    resizeT = setTimeout(()=>{
+      if(document.body.classList.contains("phase")) return;
+      const po = detail.classList.contains("open");
+      if(focused) focusNode(focused,false,po); else fit(false);
+    },160);
+  });
+
+  /* ---------------- boot ---------------- */
+  const poster = location.hash === "#poster";
+  if(poster) document.body.classList.add("poster");
+
+  let initialFocus = null;
+  if(location.hash.indexOf("#focus=") === 0){
+    try { initialFocus = nodeById.get(decodeURIComponent(location.hash.slice(7))); } catch(e) { initialFocus = null; }
+  }
+
+  const mobileIntro = !poster && !initialFocus && location.hash !== "#phase" &&
+    window.matchMedia("(max-width:620px)").matches;
+  if(mobileIntro) initialFocus = tree.children[0];
+  const isNarrow = window.matchMedia("(max-width:780px)").matches;
+
+  if(poster) collapsed.clear();
+  else collapseFormulaGroups();
+
+  if(initialFocus){
+    expandAncestors(initialFocus);
+    collapsed.delete(initialFocus);
+  }
+
+  render();
+  requestAnimationFrame(()=>{
+    if(initialFocus) focusNode(initialFocus,false, !(mobileIntro || isNarrow));
+    else fit(false);
+    if(location.hash === "#phase") setView("phase");
+  });
+})();
+</script>
+</body>
+</html>
